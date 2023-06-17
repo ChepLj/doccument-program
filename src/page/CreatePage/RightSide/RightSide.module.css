@@ -1,0 +1,64 @@
+.rightSide {
+    --createPageRightSideWidth: 32%;
+    width: var(--createPageRightSideWidth);
+    /* width: 32%; */
+    height: 100%;
+    padding: 10px;
+    overflow: auto;
+  }
+  
+  .rightSideFile {
+    border-bottom: 1px solid gray;
+    margin-bottom: 10px;
+  }
+  
+  .rightSideFileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .rightSideImageList {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+    border-bottom: 1px solid gray;
+    
+  }
+  
+  .rightSideImageItem {
+    /* height: 25%; */
+    aspect-ratio : 1 / 1;
+    width: 25%;
+    border: 1px solid #ccc;
+    margin: 4px;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .rightSideImageItem:hover{
+      .rightSideImageItemDeleteIcon{
+          display: block;
+      }
+      box-shadow: 1px 1px 5px gray;
+  }
+  .rightSideImageItemDeleteIcon{
+      position: absolute;
+      top: 5px;
+      right: 2px;
+      font-size: smaller;
+      color: red;
+      display: none;
+  }
+  
+  .rightSideImageItemDeleteIcon:hover{
+      cursor: pointer;
+  
+  }
+  
+  .rightSideImageItemImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }

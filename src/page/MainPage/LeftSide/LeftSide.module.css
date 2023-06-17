@@ -1,0 +1,16 @@
+
+
+.container{
+    background-color: whitesmoke;
+    width: 17%;
+    height: 100%;
+    border-right: 2px solid gray;
+    align-items: flex-start;
+    overflow:auto;
+    color:rgb(232, 236, 240)
+}
+
+.list {
+    width: 100%;
+
+}
