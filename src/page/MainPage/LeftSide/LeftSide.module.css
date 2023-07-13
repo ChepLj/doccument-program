@@ -7,7 +7,9 @@
     border-right: 2px solid gray;
     align-items: flex-start;
     overflow:auto;
-    color:rgb(232, 236, 240)
+    color:rgb(232, 236, 240);
+    padding-bottom: 50px;
+    box-sizing: border-box;
 }
 
 .list {
