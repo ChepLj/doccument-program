@@ -1,9 +1,13 @@
+import { get, ref } from "firebase/database";
+import getDataFromDB from "../../api/getDataFromDB";
 import { ITF_drawingContentItem } from "../../interface/interface";
+import MIMEtype from "../MIMEtype.json";
 import { getKeyByValue } from "./getKeyByValue";
 import handleNowTime from "./handleTime";
-import MIMEtype from "../MIMEtype.json";
+import { database } from "../../api/firebase/firebaseConfig";
 
-export function upLoadDataCreatePage(prop: any) {
+export async function upLoadDataCreatePage(prop: any) {
+  console.log("🚀 ~ file: handelUploadDataCreatePage.ts:10 ~ upLoadDataCreatePage ~ prop:", prop)
   //TODO: validate data
   const validateData = () => {
     const condition1 =
@@ -22,72 +26,104 @@ export function upLoadDataCreatePage(prop: any) {
   //TODO_END: validate data
   //TODO: handle prepare data upload
 
-  if (validateData()) {
-
-    //: handle ID code
-    const handleIdCode = () => {
-      if (prop.selectIdCodeValue === "Create New") {
-        return "Create New";
-      }
-      return JSON.parse(prop.selectIdCodeValue);
-    };
-    //: handle detail
-    const handleDetail = () => {
-      return {
-        line1: {
-          text: prop.newChangeInputLine1,
-          attachment: [],
-        },
-        line2: {
-          text: prop.newChangeInputLine2,
-          attachment: [],
-        },
-        line3: {
-          text: prop.newChangeInputLine3,
-          attachment: [],
-        },
-        line4: {
-          text: prop.newChangeInputLine4,
-          attachment: [],
-        },
-      };
-    };
-    //: handle version
-    const handleVersion = () => {
-      if (prop.selectIdCodeValue === "Create New") {
-        return "01";
-      } else {
-        const newVersionTemp = +JSON.parse(prop.selectIdCodeValue).version + 1;
-        if (newVersionTemp > 9) {
-          return `${newVersionTemp}`;
+  //: handle ID code
+  const handleIdCode = async (typeValue:any,areaValue: any, localValue: any) => {
+    if (prop.selectIdCodeValue === "Create New") {
+      const areaId = areaValue.id;
+      const localId = localValue.id;
+      const typeName = typeValue.name
+      const refChild = `${typeName}/${areaId}/${localId}`;
+      const mainRef = ref(database, refChild);
+      try {
+        const snapshot = await get(mainRef);
+        if (snapshot.exists()) {
+          const objectTemp = snapshot.val();
+          const keyOfObjectTemp = Object.keys(objectTemp);
+          const itemArray = keyOfObjectTemp.map((crr) => {
+            return +crr.slice(6);
+          });
+          const newItem = Math.max(...itemArray) + 1;
+          if (newItem > 9) {
+            return `${areaId}-${localId}-${newItem}`;
+          }
+          return `${areaId}-${localId}-0${newItem}`;
+        } else {
+          return `${areaId}-${localId}-01`;
         }
-        return `0${newVersionTemp}`;
+      } catch {
+        alert("can't get idCode, upload failure");
+        window.location.replace("/create");
       }
+    }
+    return JSON.parse(prop.selectIdCodeValue).idCode;
+  };
+  //: handle detail
+  const handleDetail = () => {
+    return {
+      line1: {
+        text: prop.newChangeInputLine1,
+        attachment: [],
+      },
+      line2: {
+        text: prop.newChangeInputLine2,
+        attachment: [],
+      },
+      line3: {
+        text: prop.newChangeInputLine3,
+        attachment: [],
+      },
+      line4: {
+        text: prop.newChangeInputLine4,
+        attachment: [],
+      },
     };
+  };
+  //: handle version
+  const handleVersion = () => {
+    if (prop.selectIdCodeValue === "Create New") {
+      return "01";
+    } else {
+      const newVersionTemp = +JSON.parse(prop.selectIdCodeValue).version + 1;
+      if (newVersionTemp > 9) {
+        return `${newVersionTemp}`;
+      }
+      return `0${newVersionTemp}`;
+    }
+  };
+  if (validateData()) {
+    const typeValue = JSON.parse(prop.selectTypeValue)
+    const areaValue = JSON.parse(prop.selectAreaValue);
+    const localValue = JSON.parse(prop.selectLocalValue);
+    const groupValue = JSON.parse(prop.selectGroupValue);
+
+    // const idCodeValue = JSON.parse(prop.selectIdCodeValue);
     const objectData: ITF_drawingContentItem = {
-      idCode: handleIdCode(),
+      idCode: await handleIdCode(typeValue,areaValue, localValue),
       name: prop.nameInputValue,
       type: prop.file?.type ? getKeyByValue(MIMEtype, prop.file.type) : "...",
-      author: "Nguyen Van A",
+      author: prop.authorLogin.displayName,
+      authorId: prop.authorLogin.userName,
       dateUpdate: handleNowTime("date only"),
       version: handleVersion(),
-      status: "New",
+      status: "Waiting for approve",
       size: prop.file?.size,
-      groupArea: {
-        id: "01",
-        name: "DRAWING",
+      path: `${typeValue.name}/(${areaValue.id})${areaValue.name}/(${localValue.id})${localValue.name}/(${groupValue.id})${groupValue.name}/`,
+      ref: `${typeValue.name}/${areaValue.id}/${localValue.id}`,
+      groupStyle: {
+        id: typeValue.id,
+        name: typeValue.name,
       },
-      rootArea: {
-        id: JSON.parse(prop.selectAreaValue).id,
-        name: JSON.parse(prop.selectAreaValue).name,
+      areaField: {
+        id: areaValue.id,
+        name: areaValue.name,
       },
-      motherArea: {
-        id: JSON.parse(prop.selectLocalValue).id,
-        name: JSON.parse(prop.selectLocalValue).name,
+      localField: {
+        id: localValue.id,
+        name: localValue.name,
       },
-      localArea: {
-        id: JSON.parse(prop.selectGroupValue).id,
-        name: JSON.parse(prop.selectGroupValue).name,
+      groupField: {
+        id: groupValue.id,
+        name: groupValue.name,
       },
       commit: prop.commitInput,
       detail: handleDetail(),
@@ -95,7 +131,12 @@ export function upLoadDataCreatePage(prop: any) {
       accessRights: [],
       available: "normal",
     };
-    console.log("🚀 ~ file: CreatePage.tsx:107 ~ handlePrepareDataUpload ~ objectData:", objectData);
+    // console.log("🚀 ~ file: CreatePage.tsx:107 ~ handlePrepareDataUpload ~ objectData:", objectData);
+
+    prop?.setUploadState({
+      isUpload: true,
+      data: objectData,
+    });
   } else alert("Tất cả các trường có dấu * phải được điền !!!");
 
   //TODO_END: handle prepare data upload

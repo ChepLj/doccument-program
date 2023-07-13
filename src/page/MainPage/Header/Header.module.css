@@ -42,7 +42,8 @@
 }
 
 .avatar{
-    height: calc(var(--headerHeight) * 0.7);
-    width: calc(var(--headerHeight) * 0.7);
+    height: calc(var(--headerHeight) * 0.7) !important;
+    width: calc(var(--headerHeight) * 0.7) !important;
     margin:5px 15px ;
+    border: 2px solid green;
 }

@@ -4,6 +4,7 @@
     height:95%;
     text-align: start;
     overflow: scroll;
+    /* background-color: rgb(20, 20, 20, 0.7); */
 
 }
 
@@ -16,6 +17,9 @@
     box-sizing: border-box;
     font-size:14px;
     padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .listItem{

@@ -1,0 +1,30 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "README.md": true,
+        "package-lock.json": true,
+        "firebase.json": true,
+        "cors.json": true,
+        ".prettierrc": true,
+        ".gitignore": true,
+        ".firebaserc": true,
+        ".firebase": true,
+        ".vscode": true
+    },
+    "hide-files.files": [
+        "README.md",
+        "package-lock.json",
+        "firebase.json",
+        "cors.json",
+        ".prettierrc",
+        ".gitignore",
+        ".firebaserc",
+        ".firebase",
+        ".vscode"
+    ]
+}

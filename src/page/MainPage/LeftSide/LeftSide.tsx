@@ -1,50 +1,84 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemText,
-  Typography,
-} from "@mui/material";
-import { useState } from "react";
-// import { drawingField, leftSideMainData } from "../../../fakeData/fakeData.ts";
+import { Accordion, AccordionDetails, AccordionSummary, Divider, List, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { SyntheticEvent, useEffect, useState } from "react";
 
-import style from "./LeftSide.module.css";
-import { drawingField } from "../../../fakeData/fakeData.ts";
+import getDataFromDB from "../../../api/getDataFromDB.ts";
 import { ITF_drawing } from "../../../interface/interface.ts";
+import style from "./LeftSide.module.css";
 
-export function LeftSide({ field, setRightSideContent }: { field: string , setRightSideContent: Function}) {
-  const [selectedIndex, setSelectedIndex] = useState("01");
-  let lefSideField:ITF_drawing[]  = []
+export function LeftSide({ locationState, setRefreshState }: { locationState: string; setRefreshState: Function }) {
+  const [leftSideField, setLeftSideField] = useState<ITF_drawing[]>([]);
 
-  const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, rootArea: string , motherArea: string) => {
-    setSelectedIndex(`${rootArea}-${motherArea}`);
-    setRightSideContent({
-      rootArea,
-      motherArea,
-    })
+  const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, areaField: string, localField: string) => {
+    window.history.pushState([locationState[0], areaField, localField], "", "/");
+    setRefreshState(Math.random());
   };
-  switch (field){
-    case 'Drawing':{
-      lefSideField = drawingField
-      break
+  useEffect(() => {
+    switch (locationState[0]) {
+      case "DRAWING": {
+        const ref = "DRAWING/FIELD/";
+        const callback = (result: any) => {
+          if (result.type === "SUCCESSFUL") {
+            setLeftSideField(result.payload);
+          } else {
+            setLeftSideField([]);
+          }
+        };
+        getDataFromDB(ref, callback);
+        break;
+      }
+
+      case "DOCUMENT": {
+        const ref = "DOCUMENT/FIELD/";
+        const callback = (result: any) => {
+          if (result.type === "SUCCESSFUL") {
+            setLeftSideField(result.payload);
+          } else {
+            setLeftSideField([]);
+          }
+        };
+        getDataFromDB(ref, callback);
+        break;
+      }
+      case "PROGRAM": {
+        const ref = "PROGRAM/FIELD/";
+        const callback = (result: any) => {
+          if (result.type === "SUCCESSFUL") {
+            setLeftSideField(result.payload);
+          } else {
+            setLeftSideField([]);
+          }
+        };
+        getDataFromDB(ref, callback);
+        break;
+      }
     }
-  }
+  }, [locationState[0]]);
+//TODO: expand Accordion
+  const [expanded, setExpanded] = useState<string | false>();
+
+  const handleChange = (panel: string) => (event: SyntheticEvent, newExpanded: boolean) => {
+    setExpanded(newExpanded ? panel : false);
+  };
+  useEffect(() => {
+    setExpanded(locationState[1] ? locationState[1] : false);
+  }, []);
+//TODO_END: expand Accordion
+
   return (
     <div className={style.container}>
-      {lefSideField.map((crr, index) => {
+      {leftSideField.map((crr, index) => {
         return (
-          <Accordion  key={index} style={{borderTop: '1px solid #ccc'}}  >
+          <Accordion key={index} style={{ borderTop: "1px solid #ccc"}} onChange={handleChange(crr.id)} expanded={expanded === crr.id}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
               <Typography
                 style={{
                   margin: 0,
+                  fontWeight:500 
                 }}
+                
               >
-                { `(${crr.id}) ${crr.name}`}
+                {`(${crr.id}) ${crr.name}`}
               </Typography>
             </AccordionSummary>
             <Divider />
@@ -57,16 +91,11 @@ export function LeftSide({ field, setRightSideContent }: { field: string , setRi
               }}
             >
               <List component="nav" aria-label="main mailbox folders">
-                {crr.item.map((crrItem, indexItem) => {
+                {crr.item?.map((crrItem, indexItem) => {
                   return (
                     <div key={indexItem}>
-                      <ListItemButton
-                        selected={selectedIndex === `${crr.id}-${crrItem.id}`}
-                        onClick={(event) => handleListItemClick(event, crr.id , crrItem.id)}
-                        sx={{bgColor: 'red'}}
-                      >
+                      <ListItemButton selected={`${locationState[1]}-${locationState[2]}` === `${crr.id}-${crrItem.id}`} onClick={(event) => handleListItemClick(event, crr.id, crrItem.id)}>
                         <ListItemText primary={`(${crrItem.id}) ${crrItem.name}`} />
-                        
                       </ListItemButton>
                       <Divider />
                     </div>

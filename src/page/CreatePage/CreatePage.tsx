@@ -1,20 +1,29 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { handleData4CreateIdCodeList } from "../../component/FCComponent/handleData4CreateIdCode";
 
-import handleNowTime from "../../component/FCComponent/handleTime";
-import { drawingContent, drawingField } from "../../fakeData/fakeData";
-import { ITF_drawing, ITF_drawingContent, ITF_drawingContentItem } from "../../interface/interface";
+import getDataFromDB from "../../api/getDataFromDB";
+import { upLoadDataCreatePage } from "../../component/FCComponent/handelUploadDataCreatePage";
+import { ITF_Area, ITF_drawing, ITF_drawingContent, ITF_drawingContentItem } from "../../interface/interface";
 import style from "./CreatePage.module.css";
 import { Header } from "./Header/Header";
 import LeftSide from "./LeftSide/LeftSide";
+import ProgressUpload from "./ProgressUpload/ProgressUpload";
 import RightSide from "./RightSide/RightSide";
-import { getKeyByValue } from "../../component/FCComponent/getKeyByValue";
-import MIMEtype from "../../component/MIMEtype.json";
-import { isObjectEmpty } from "../../component/FCComponent/isObjectEmpty";
-import { upLoadDataCreatePage } from "../../component/FCComponent/handelUploadDataCreatePage";
+import { AuthContext } from "../LoginPage/function/loginContext";
 
 export function CreatePage() {
-  const [selectTypeValue, setSelectTypeValue] = useState<string>("");
+  //TODO: mount
+  console.log("%cCreatePage Render", "color:green");
+  useEffect(() => {
+    return () => {
+      console.log("%cCreatePage Unmount", "color:red");
+    };
+  }, []);
+  //TODO_EMD: mount
+  const locationState: ITF_drawingContentItem = window.history.state.stateProp;
+  const { authorLogin } = useContext<any>(AuthContext);
+  console.log("🚀 ~ file: CreatePage.tsx:28 ~ CreatePage ~ locationState:", locationState);
+  const [selectTypeValue, setSelectTypeValue] = useState<any>("");
   const [selectAreaValue, setSelectAreaValue] = useState<any>("");
   const [selectLocalValue, setSelectLocalValue] = useState<any>("");
   const [selectGroupValue, setSelectGroupValue] = useState<any>("");
@@ -32,11 +41,31 @@ export function CreatePage() {
   const [imageArray2, setImageArray2] = useState([]);
   const [imageArray3, setImageArray3] = useState([]);
   const [imageArray4, setImageArray4] = useState([]);
-
-  const [areaFieldList, setAreaFieldList] = useState<ITF_drawing[]>([]);
+  const typeList = [
+    {
+      id: "01",
+      name: "DRAWING",
+      color: "red",
+    },
+    {
+      id: "02",
+      name: "DOCUMENT",
+      color: "green",
+    },
+    {
+      id: "03",
+      name: "PROGRAM",
+      color: "violet",
+    },
+  ];
+  const [areaFieldList, setAreaFieldList] = useState<ITF_drawing[] | ITF_Area[]>([]);
   const [localFieldList, setLocalFieldList] = useState<ITF_drawing[]>([]);
   const [groupFieldList, setGroupFieldList] = useState<{ id: string; name: string }[]>([]);
   const [idCodeFieldList, setIdCodeFieldList] = useState<{ id: string; name: string }[]>([]);
+  const [uploadState, setUploadState] = useState({
+    isUpload: false,
+    data: {},
+  });
 
   const propUpload = {
     selectTypeValue,
@@ -56,7 +85,55 @@ export function CreatePage() {
     imageArray2,
     imageArray3,
     imageArray4,
+    setUploadState,
+    authorLogin
   };
+
+  //TODO: create Field from main page
+  //: group type
+  useEffect(() => {
+    if (locationState?.groupStyle?.name) {
+      for (const item of typeList) {
+        if (item.name === locationState.groupStyle.name) {
+          handleField(JSON.stringify(item));
+          break;
+        }
+      }
+    }
+  }, []);
+  //: area
+  useEffect(() => {
+    if (locationState?.areaField?.id && areaFieldList !== undefined) {
+      for (const item of areaFieldList) {
+        if (item.id === locationState.areaField?.id) {
+          setSelectAreaValue(JSON.stringify(item));
+        }
+      }
+    }
+  }, [areaFieldList]);
+  //: local
+  useEffect(() => {
+    if (locationState?.localField?.id && localFieldList !== undefined) {
+      for (const item of localFieldList) {
+        if (item.id === locationState.localField?.id) {
+          setSelectLocalValue(JSON.stringify(item));
+        }
+      }
+    }
+  }, [localFieldList]);
+  //: idCode
+  useEffect(() => {
+    if (locationState && idCodeFieldList.length > 1) {
+      if (locationState.idCode === "Create New") {
+        setSelectIdCodeValue("Create New");
+        setSelectGroupValue(JSON.stringify(locationState?.groupField));
+      } else {
+        setSelectIdCodeValue(JSON.stringify(locationState));
+      }
+    }
+  }, [idCodeFieldList]);
+
+  //TODO_END: create Field from main page
 
   //TODO: handle Field
   const handleField = (fieldResult: string) => {
@@ -65,47 +142,72 @@ export function CreatePage() {
 
   //: Area Field
   useEffect(() => {
-    switch (selectTypeValue) {
-      case "DRAWING": {
-        const arrayTemp = [];
-        for (const item in drawingField) {
-          arrayTemp.push(drawingField[item]);
+    if (selectTypeValue) {
+      const type = JSON.parse(selectTypeValue).name;
+      switch (type) {
+        case "DRAWING": {
+          const ref = "DRAWING/FIELD/";
+          const callback = (result: any) => {
+            if (result.type === "SUCCESSFUL") {
+              const arrayTemp = [];
+              const drawingField = result.payload;
+              for (const item in drawingField) {
+                arrayTemp.push(drawingField[item]);
+              }
+              setAreaFieldList(arrayTemp);
+            } else {
+              alert("can not get FIELD of DRAWING !!! Failure");
+            }
+          };
+          getDataFromDB(ref, callback);
+          setLocalFieldList([]);
+          setGroupFieldList([]);
+          setIdCodeFieldList([]);
+          setSelectAreaValue("");
+          setNameInputValue("");
+          setCommitInput("");
+          setSelectLocalValue("");
+          setSelectIdCodeValue("");
+          break;
         }
-        setAreaFieldList(arrayTemp);
-        setLocalFieldList([]);
-        setGroupFieldList([]);
-        setIdCodeFieldList([]);
-        setSelectAreaValue("");
-        setNameInputValue("");
-        setSelectLocalValue("");
-        setSelectIdCodeValue("");
-        break;
-      }
-      case "DOCUMENT": {
-        const arrayTemp = [];
-        // for (const item in drawingField) {
-        //   arrayTemp.push({ id: drawingField[item].id, name: drawingField[item].name });
-        // }
-        setAreaFieldList([]);
-        setLocalFieldList([]);
-        setGroupFieldList([]);
-        setIdCodeFieldList([]);
-        setNameInputValue("");
+        case "DOCUMENT": {
+          const arrayTemp = [];
+          // for (const item in drawingField) {
+          //   arrayTemp.push({ id: drawingField[item].id, name: drawingField[item].name });
+          // }
+          setAreaFieldList([]);
+          setLocalFieldList([]);
+          setGroupFieldList([]);
+          setIdCodeFieldList([]);
+          setNameInputValue("");
 
-        break;
-      }
-      case "PROGRAM": {
-        const arrayTemp = [];
-        // for (const item in drawingField) {
-        //   arrayTemp.push({ id: drawingField[item].id, name: drawingField[item].name });
-        // }
-        setAreaFieldList([]);
-        setLocalFieldList([]);
-        setGroupFieldList([]);
-        setIdCodeFieldList([]);
-        setNameInputValue("");
-
-        break;
+          break;
+        }
+        case "PROGRAM": {
+          const ref = "PROGRAM/FIELD/";
+          const callback = (result: any) => {
+            if (result.type === "SUCCESSFUL") {
+              const arrayTemp = [];
+              const programField = result.payload;
+              for (const item in programField) {
+                arrayTemp.push(programField[item]);
+              }
+              setAreaFieldList(arrayTemp);
+            } else {
+              alert("can not get FIELD of PROGRAM !!! Failure");
+            }
+          };
+          getDataFromDB(ref, callback);
+          setLocalFieldList([]);
+          setGroupFieldList([]);
+          setIdCodeFieldList([]);
+          setSelectAreaValue("");
+          setNameInputValue("");
+          setCommitInput("");
+          setSelectLocalValue("");
+          setSelectIdCodeValue("");
+          break;
+        }
       }
     }
   }, [selectTypeValue]);
@@ -138,28 +240,39 @@ export function CreatePage() {
   //: IdCode Field
   useEffect(() => {
     if (selectLocalValue) {
-      const rootKey = JSON.parse(selectAreaValue).id as keyof ITF_drawingContent;
-      const motherKey = JSON.parse(selectLocalValue).id as keyof ITF_drawingContent;
-      const objectTemp = drawingContent?.[rootKey]?.[motherKey];
-      const idCodeFieldArrayTemp = handleData4CreateIdCodeList(objectTemp);
+      const typeName = JSON.parse(selectTypeValue).name;
+      const areaId = JSON.parse(selectAreaValue).id;
+      const localId = JSON.parse(selectLocalValue).id;
+      const refChild = `${typeName}/${areaId}/${localId}`;
+      const callback = (result: any) => {
+        if (result.type === "SUCCESSFUL") {
+          const idCodeFieldArrayTemp = handleData4CreateIdCodeList(result.payload);
+
+          setIdCodeFieldList(idCodeFieldArrayTemp);
+        }
+      };
+      getDataFromDB(refChild, callback);
       setSelectIdCodeValue("");
       setNameInputValue("");
-      setIdCodeFieldList(idCodeFieldArrayTemp);
     }
   }, [selectLocalValue]);
-  //: Name Input
+  //: Name Input & group
   useEffect(() => {
     if (selectIdCodeValue) {
       if (selectIdCodeValue === "Create New") {
-        setSelectGroupValue("");
+        if (!locationState?.groupField) {
+          //:chan reset group khi tu trang viewport 1 qua
+          setSelectGroupValue("");
+        }
+
         setNameInputValue("");
         setLocalGroupDisable(false);
       } else {
         setLocalGroupDisable(true);
         const selectIdCodeValueOjb = JSON.parse(selectIdCodeValue);
-        const objGroupValue = selectIdCodeValueOjb?.localArea;
+        const objGroupValue = selectIdCodeValueOjb?.groupField;
         setSelectGroupValue(JSON.stringify(objGroupValue));
-        setNameInputValue(objGroupValue?.name);
+        setNameInputValue(selectIdCodeValueOjb?.name);
       }
     }
   }, [selectIdCodeValue]);
@@ -170,62 +283,77 @@ export function CreatePage() {
     <section className={style.container}>
       <Header upLoadAction={() => upLoadDataCreatePage(propUpload)} />
       <section className={style.content}>
-        <LeftSide
-          prop={{
-            selectTypeValue,
-            setSelectTypeValue,
-            selectAreaValue,
-            setSelectAreaValue,
-            selectLocalValue,
-            setSelectLocalValue,
-            selectGroupValue,
-            setSelectGroupValue,
-            selectIdCodeValue,
-            setSelectIdCodeValue,
-            selectFileTypeValue,
-            setSelectFileTypeValue,
-            imageArray1,
-            setImageArray1,
-            imageArray2,
-            setImageArray2,
-            imageArray3,
-            setImageArray3,
-            imageArray4,
-            setImageArray4,
-            handleField,
-            areaFieldList,
-            localFieldList,
-            groupFieldList,
-            idCodeFieldList,
-            nameInputValue,
-            setNameInputValue,
-            localGroupDisable,
-            commitInput,
-            setCommitInput,
-            newChangeInputLine1,
-            newChangeInputLine2,
-            newChangeInputLine3,
-            newChangeInputLine4,
-            setNewChangeInputLine1,
-            setNewChangeInputLine2,
-            setNewChangeInputLine3,
-            setNewChangeInputLine4,
-          }}
-        />
-        <RightSide
-          prop={{
-            file,
-            setFile,
-            imageArray1,
-            setImageArray1,
-            imageArray2,
-            setImageArray2,
-            imageArray3,
-            setImageArray3,
-            imageArray4,
-            setImageArray4,
-          }}
-        />
+        {uploadState.isUpload === false && (
+          <>
+            <LeftSide
+              prop={{
+                typeList,
+                selectTypeValue,
+                setSelectTypeValue,
+                selectAreaValue,
+                setSelectAreaValue,
+                selectLocalValue,
+                setSelectLocalValue,
+                selectGroupValue,
+                setSelectGroupValue,
+                selectIdCodeValue,
+                setSelectIdCodeValue,
+                selectFileTypeValue,
+                setSelectFileTypeValue,
+                imageArray1,
+                setImageArray1,
+                imageArray2,
+                setImageArray2,
+                imageArray3,
+                setImageArray3,
+                imageArray4,
+                setImageArray4,
+                handleField,
+                areaFieldList,
+                localFieldList,
+                groupFieldList,
+                idCodeFieldList,
+                nameInputValue,
+                setNameInputValue,
+                localGroupDisable,
+                commitInput,
+                setCommitInput,
+                newChangeInputLine1,
+                newChangeInputLine2,
+                newChangeInputLine3,
+                newChangeInputLine4,
+                setNewChangeInputLine1,
+                setNewChangeInputLine2,
+                setNewChangeInputLine3,
+                setNewChangeInputLine4,
+              }}
+            />
+            <RightSide
+              prop={{
+                file,
+                setFile,
+                imageArray1,
+                setImageArray1,
+                imageArray2,
+                setImageArray2,
+                imageArray3,
+                setImageArray3,
+                imageArray4,
+                setImageArray4,
+              }}
+            />
+          </>
+        )}
+        {uploadState.isUpload === true && (
+          <ProgressUpload
+            prop={{
+              dataObject: uploadState?.data,
+              file: file,
+              image: [imageArray1, imageArray2, imageArray3, imageArray4],
+            }}
+          />
+          // <h3>dsfsdff</h3>
+        )}
       </section>
     </section>
   );

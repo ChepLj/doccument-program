@@ -6,61 +6,86 @@ export const handleData4CreateIdCodeList = (idCodeData: ITF_drawingContentItem[]
     const objFilter: any = {
       "01": {
         Current: [],
+        New: []
       },
       "02": {
         Current: [],
+        New: []
       },
       "03": {
         Current: [],
+        New: []
       },
       "04": {
         Current: [],
+        New: []
       },
       "05": {
         Current: [],
+        New: []
       },
     };
     for (const key in idCodeData) {
       const keyTemp = key as keyof ITF_drawingContent;
-      const itemTemp: ITF_drawingContentItem = idCodeData[keyTemp];
-
-      switch (itemTemp.localArea?.id) {
-        case "01": {
-          if (itemTemp.status === "Current") {
-            objFilter["01"].Current.push(itemTemp);
+      const itemTemp:ITF_drawingContent = idCodeData[keyTemp];
+      for(const keyChild in itemTemp){
+        const keyChildTemp = keyChild as keyof ITF_drawingContent
+        const itemChildTemp:ITF_drawingContentItem =  itemTemp[keyChildTemp]
+        switch (itemChildTemp.groupField?.id) {
+          case "01": {
+            if (itemChildTemp.status === "Current") {
+              objFilter["01"].Current.push(itemChildTemp);
+            }
+            else if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["01"].New.push(itemChildTemp);
+            }
+            objFilter["01"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["01"].groupName = itemTemp.localArea.name;
-          break;
-        }
-        case "02": {
-          if (itemTemp.status === "Current") {
-            objFilter["02"].Current.push(itemTemp);
+          case "02": {
+            if (itemChildTemp.status === "Current") {
+              objFilter["02"].Current.push(itemChildTemp);
+            }
+            else if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["02"].New.push(itemChildTemp);
+            }
+            objFilter["02"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["02"].groupName = itemTemp.localArea.name;
-          break;
-        }
-        case "03": {
-          if (itemTemp.status === "Current") {
-            objFilter["03"].Current.push(itemTemp);
+          case "03": {
+            if (itemChildTemp.status === "Current") {
+              objFilter["03"].Current.push(itemChildTemp);
+            }
+            else if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["03"].New.push(itemChildTemp);
+            }
+            objFilter["03"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["03"].groupName = itemTemp.localArea.name;
-          break;
-        }
-        case "04": {
-          if (itemTemp.status === "Current") {
-            objFilter["04"].Current.push(itemTemp);
+          case "04": {
+            if (itemChildTemp.status === "Current") {
+              objFilter["04"].Current.push(itemChildTemp);
+            }
+            else if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["04"].New.push(itemChildTemp);
+            }
+            objFilter["04"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["04"].groupName = itemTemp.localArea.name;
-          break;
-        }
-        case "05": {
-          if (itemTemp.status === "Current") {
-            objFilter["05"].Current.push(itemTemp);
+          case "05": {
+            if (itemChildTemp.status === "Current") {
+              objFilter["05"].Current.push(itemChildTemp);
+            }
+            else if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["05"].New.push(itemChildTemp);
+            }
+            objFilter["05"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["05"].groupName = itemTemp.localArea.name;
-          break;
         }
       }
+
+
     }
     //: chuyen object sang array de render
     for (const item in objFilter) {

@@ -30,7 +30,7 @@ export default function RightSide({ prop }: { prop: any }) {
     <section className={style.rightSide}>
       <div className={style.rightSideFile}>
         <div className={style.rightSideFileHeader}>
-          <span style={{ color: "black", fontWeight: 600, textAlign: "start" }}>File</span>
+          <span style={{ color: "black", fontWeight: 600, textAlign: "start" }}>File*</span>
           <Button
             variant="outlined"
             size="small"

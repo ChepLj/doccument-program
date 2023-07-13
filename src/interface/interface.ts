@@ -11,11 +11,14 @@ export interface ITF_drawingContentItem {
   name: string;
   type?: string;
   author?: string;
+  authorId?: string | number;
   dateUpdate?: string;
   version?: string;
   status?: string;
   size?: number;
   commit?: string;
+  path?:string;
+  ref?:string;
   detail?: {
     line1:{
       text: string;
@@ -37,15 +40,15 @@ export interface ITF_drawingContentItem {
   };
   urlFileStore?: string;
   available?: string;
-  groupArea?: ITF_Area;
-  rootArea?: ITF_Area;
-  motherArea?: ITF_Area;
-  localArea?: ITF_Area;
-  accessRights: string[],
+  groupStyle?: ITF_Area;
+  areaField?: ITF_Area;
+  groupField?: ITF_Area;
+  localField?: ITF_Area;
+  accessRights?: string[],
   
 }
 
-interface ITF_Area {
+export interface ITF_Area {
   id: string;
   name: string;
 }
@@ -64,8 +67,20 @@ export interface ITF_ObjFilter {
 
 }
 export interface ITF_ObjFilterArray{
-  New: string[],
-  Current: string[],
+  New: {key:string,keyChild:string}[],
+  Current: {key:string,keyChild:string}[],
   id?: string,
   groupName?: string
+}
+
+export interface ITF_UploadContainer {
+  ref: string;
+  data: any;
+}
+
+export interface ITF_AuthorLogin {
+  displayName: string;
+  email:string;
+  photoURL:string;
+  provider:string;
 }

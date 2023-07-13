@@ -5,33 +5,36 @@ import ViewPort2 from "./ViewPort2/ViewPort2";
 import { isObjectEmpty } from "../../../component/FCComponent/isObjectEmpty";
 import ViewPortNoData from "./ViewPortNoData/ViewPortNoData";
 
-export function RightSide({
-  rightSideContentData,
-  rightSideContent,
-}: {
-  rightSideContentData: any;
-  rightSideContent: { rootArea: string; motherArea: string };
-}) {
+export function RightSide({ rightSideContentData, locationState, setModalImageOpen}: { rightSideContentData: any; locationState: any ,setModalImageOpen:Function}) {
   const [viewPort, setViewPort] = useState({
     viewPort: "ViewPortNoData",
-    key: "",
+    key: {
+      key: "",
+      keyChild: "",
+    },
   });
   let viewPortRender = {
-    viewPort: 'ViewPortNoData',
-    key: "",
+    viewPort: "ViewPortNoData",
+    key: {
+      key: "",
+      keyChild: "",
+    },
   };
- 
+
   if (isObjectEmpty(rightSideContentData) || typeof rightSideContentData === "undefined") {
     viewPortRender = {
-      viewPort: 'ViewPortNoData',
-      key: "",
+      viewPort: "ViewPortNoData",
+      key: {
+        key: "",
+        keyChild: "",
+      },
     };
   } else {
     viewPortRender = viewPort;
   }
 
   //TODO: handle direct viewport 2
-  const handelDirectViewPort2 = (idCodeWithVersion: string) => {
+  const handelDirectViewPort2 = (idCodeWithVersion: { key: string; keyChild: string }) => {
     setViewPort({
       viewPort: "ViewPort2",
       key: idCodeWithVersion,
@@ -42,7 +45,10 @@ export function RightSide({
   const handleBackToViewPort1 = () => {
     setViewPort({
       viewPort: "ViewPort1",
-      key: "",
+      key: {
+        key: "",
+        keyChild: "",
+      },
     });
   };
   //TODO_END: handle back viewport 1
@@ -50,28 +56,27 @@ export function RightSide({
   useEffect(() => {
     setViewPort({
       viewPort: "ViewPort1",
-      key: "",
+      key: {
+        key: "",
+        keyChild: "",
+      },
     });
-  }, [rightSideContent.motherArea || rightSideContent.rootArea]);
+  }, [locationState[2] || locationState[1]]);
   //TODO_END: reset viewPort when left side motherArea had change
 
   return (
     <div className={style.contentContainer}>
-      {viewPortRender.viewPort === "ViewPort1" && (
-        <ViewPort1 rightSideContentData={rightSideContentData} handelDirectViewPort2={handelDirectViewPort2} />
-      )}
+      {viewPortRender.viewPort === "ViewPort1" && <ViewPort1 rightSideContentData={rightSideContentData} handelDirectViewPort2={handelDirectViewPort2} />}
       {viewPortRender.viewPort === "ViewPort2" && (
         <ViewPort2
           idCodeWithVersion={viewPortRender.key}
-          rightSideContentData={rightSideContentData}
+          rightSideContentData4VP2={rightSideContentData[viewPortRender.key.key]}
           handleBackToViewPort1={handleBackToViewPort1}
           handelDirectViewPort2={handelDirectViewPort2}
+          setModalImageOpen={setModalImageOpen}
         />
       )}
-      {viewPortRender.viewPort === "ViewPortNoData" && (
-        <ViewPortNoData
-        />
-      )}
+      {viewPortRender.viewPort === "ViewPortNoData" && <ViewPortNoData />}
     </div>
   );
 }

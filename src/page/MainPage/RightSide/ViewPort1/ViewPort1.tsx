@@ -1,24 +1,23 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
+import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
 import { Button, Stack } from "@mui/material";
-import {
-  ITF_ObjFilter,
-  ITF_ObjFilterArray,
-  ITF_drawingContent,
-  ITF_drawingContentItem,
-} from "../../../../interface/interface.ts";
+import { useContext, useEffect } from "react";
+import downloadFileFromStorage from "../../../../api/downloadFileFromStorage.ts";
+import handleDeleteData from "../../../../component/FCComponent/handelDeleteData.ts";
+import handleApprove from "../../../../component/FCComponent/handleApprove.ts";
+import { ITF_ObjFilter, ITF_ObjFilterArray, ITF_drawing, ITF_drawingContent, ITF_drawingContentItem } from "../../../../interface/interface.ts";
+import { MainPageContext } from "./../../MainPage";
 import style from "./ViewPort1.module.css";
-import { useEffect } from "react";
+import { ITF_AuthorLogin } from "./../../../../interface/interface";
+import { AuthContext } from "../../../LoginPage/function/loginContext.tsx";
 
-export default function ViewPort1({
-  rightSideContentData,
-  handelDirectViewPort2,
-}: {
-  rightSideContentData: ITF_drawingContent;
-  handelDirectViewPort2: Function;
-}) {
+export default function ViewPort1({ rightSideContentData, handelDirectViewPort2 }: { rightSideContentData: ITF_drawingContent; handelDirectViewPort2: Function }) {
+  // console.log("🚀 ~ file: ViewPort1.tsx:22 ~ rightSideContentData:", rightSideContentData);
   console.log("%cViewPort1 Page mount", "color:green");
   useEffect(() => {
     //: Unmount
@@ -26,8 +25,8 @@ export default function ViewPort1({
       console.log("%cViewPort1 Page Unmount", "color:red");
     };
   }, []);
+
   //TODO: handle data
-  const tempArrayLocal = new Set();
   const resultArray: any[] = [];
   const handleData = () => {
     const objFilter: ITF_ObjFilter = {
@@ -54,53 +53,57 @@ export default function ViewPort1({
     };
     for (const key in rightSideContentData) {
       const keyTemp = key as keyof ITF_drawingContent;
-      const itemTemp: ITF_drawingContentItem = rightSideContentData[keyTemp];
+      const itemTemp: ITF_drawingContent = rightSideContentData[keyTemp];
+      for (const keyChild in itemTemp) {
+        const keyChildTemp = keyChild as keyof ITF_drawingContent;
+        const itemChildTemp: ITF_drawingContentItem = itemTemp[keyChildTemp];
 
-      switch (itemTemp.localArea?.id) {
-        case "01": {
-          if (itemTemp.status === "New") {
-            objFilter["01"].New.push(keyTemp);
-          } else if (itemTemp.status === "Current") {
-            objFilter["01"].Current.push(keyTemp);
+        switch (itemChildTemp.groupField?.id) {
+          case "01": {
+            if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["01"].New.push({ key: keyTemp, keyChild: keyChild });
+            } else if (itemChildTemp.status === "Current") {
+              objFilter["01"].Current.push({ key: keyTemp, keyChild: keyChild });
+            }
+            objFilter["01"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["01"].groupName = itemTemp.localArea.name;
-          break;
-        }
-        case "02": {
-          if (itemTemp.status === "New") {
-            objFilter["02"].New.push(keyTemp);
-          } else if (itemTemp.status === "Current") {
-            objFilter["02"].Current.push(keyTemp);
+          case "02": {
+            if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["02"].New.push({ key: keyTemp, keyChild: keyChild });
+            } else if (itemChildTemp.status === "Current") {
+              objFilter["02"].Current.push({ key: keyTemp, keyChild: keyChild });
+            }
+            objFilter["02"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["02"].groupName = itemTemp.localArea.name;
-          break;
-        }
-        case "03": {
-          if (itemTemp.status === "New") {
-            objFilter["03"].New.push(keyTemp);
-          } else if (itemTemp.status === "Current") {
-            objFilter["03"].Current.push(keyTemp);
+          case "03": {
+            if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["03"].New.push({ key: keyTemp, keyChild: keyChild });
+            } else if (itemChildTemp.status === "Current") {
+              objFilter["03"].Current.push({ key: keyTemp, keyChild: keyChild });
+            }
+            objFilter["03"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["03"].groupName = itemTemp.localArea.name;
-          break;
-        }
-        case "04": {
-          if (itemTemp.status === "New") {
-            objFilter["04"].New.push(keyTemp);
-          } else if (itemTemp.status === "Current") {
-            objFilter["04"].Current.push(keyTemp);
+          case "04": {
+            if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["04"].New.push({ key: keyTemp, keyChild: keyChild });
+            } else if (itemChildTemp.status === "Current") {
+              objFilter["04"].Current.push({ key: keyTemp, keyChild: keyChild });
+            }
+            objFilter["04"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["04"].groupName = itemTemp.localArea.name;
-          break;
-        }
-        case "05": {
-          if (itemTemp.status === "New") {
-            objFilter["05"].New.push(keyTemp);
-          } else if (itemTemp.status === "Current") {
-            objFilter["05"].Current.push(keyTemp);
+          case "05": {
+            if (itemChildTemp.status === "Waiting for approve") {
+              objFilter["05"].New.push({ key: keyTemp, keyChild: keyChild });
+            } else if (itemChildTemp.status === "Current") {
+              objFilter["05"].Current.push({ key: keyTemp, keyChild: keyChild });
+            }
+            objFilter["05"].groupName = itemChildTemp.groupField.name;
+            break;
           }
-          objFilter["05"].groupName = itemTemp.localArea.name;
-          break;
         }
       }
     }
@@ -120,6 +123,23 @@ export default function ViewPort1({
   const arrayRenderTemp = handleData();
 
   //TODO_END: handle data
+  //TODO: handle create new from group
+  const handleCreateNewFromGroup = (groupField: any) => {
+    const locationState = window.history.state;
+    console.log("🚀 ~ file: ViewPort1.tsx:131 ~ handleCreateNewFromGroup ~ locationState:", locationState);
+    if (locationState.length >= 3) {
+      const stateProp = {
+        groupStyle: { name: locationState[0] },
+        areaField: { id: locationState[1] },
+        localField: { id: locationState[2] },
+        idCode: "Create New",
+        groupField: groupField,
+      };
+      window.history.pushState({ stateProp }, "", "/create");
+      window.location.href = "/create";
+    }
+  };
+  //TODO_END: handle create new from group
 
   return (
     <section className={style.mainContainer}>
@@ -127,21 +147,14 @@ export default function ViewPort1({
         {arrayRenderTemp.map((motherCrr, motherIndex) => {
           return (
             <div key={motherIndex}>
-              <div className={style.titleGroup}>{`${motherCrr.id} - ${motherCrr.groupName}`}</div>
-              {motherCrr.New.length > 0 && (
-                <NewDrawing
-                  motherCrr={motherCrr}
-                  rightSideContentData={rightSideContentData}
-                  handelDirectViewPort2={handelDirectViewPort2}
-                />
-              )}
-              {motherCrr.Current.length > 0 && (
-                <CurrentDrawing
-                  motherCrr={motherCrr}
-                  rightSideContentData={rightSideContentData}
-                  handelDirectViewPort2={handelDirectViewPort2}
-                />
-              )}
+              <div className={style.titleGroup}>
+                <div>{`${motherCrr.id} - ${motherCrr.groupName}`}</div>
+                <Button variant="text" endIcon={<AddIcon />} size="small" color="info" onClick={() => handleCreateNewFromGroup({ id: motherCrr.id, name: motherCrr.groupName })}>
+                  create new
+                </Button>
+              </div>
+              {motherCrr.New.length > 0 && <NewDrawing motherCrr={motherCrr} rightSideContentData={rightSideContentData} handelDirectViewPort2={handelDirectViewPort2} />}
+              {motherCrr.Current.length > 0 && <CurrentDrawing motherCrr={motherCrr} rightSideContentData={rightSideContentData} handelDirectViewPort2={handelDirectViewPort2} />}
             </div>
           );
         })}
@@ -152,21 +165,26 @@ export default function ViewPort1({
 
 //JSX: New Drawing
 
-function NewDrawing({
-  motherCrr,
-  rightSideContentData,
-  handelDirectViewPort2,
-}: {
-  motherCrr: ITF_ObjFilterArray;
-  rightSideContentData: ITF_drawingContent;
-  handelDirectViewPort2: Function;
-}) {
+function NewDrawing({ motherCrr, rightSideContentData, handelDirectViewPort2 }: { motherCrr: ITF_ObjFilterArray; rightSideContentData: ITF_drawingContent; handelDirectViewPort2: Function }) {
+  const mainPageContext = useContext<any>(MainPageContext);
+  const { authorLogin } = useContext<any>(AuthContext);
+  //TODO: handle delete data
+  const handleDeleteNewDrawing = (ref: string, item: any) => {
+    const promptInput = prompt(`Nhập  ${item.idCode}   để xóa !`);
+    if (promptInput) {
+      handleDeleteData(ref, mainPageContext);
+    } else {
+      alert(`Sai mã bản vẽ. nhập lại !`);
+    }
+  };
+  //TODO_END: handle delete data
   return (
     <ul>
       <span className={style.titleList}>New: (waiting for approve)</span>
-      {motherCrr.New.map((groupCrr: string, groupIndex: number) => {
-        const keyTemp = groupCrr as keyof ITF_drawingContent;
-        const item: ITF_drawingContentItem = rightSideContentData[keyTemp];
+      {motherCrr.New.map((groupCrr: { key: string; keyChild: string }, groupIndex: number) => {
+        const key = groupCrr.key as keyof ITF_drawingContent;
+        const keyChild = groupCrr.keyChild as keyof ITF_drawingContent;
+        const item: ITF_drawingContentItem = rightSideContentData[key][keyChild];
         return (
           <li className={style.listItem} key={groupIndex}>
             <div className={style.leftItem}>
@@ -176,14 +194,41 @@ function NewDrawing({
                 {item.name}
               </a>
             </div>
-            <Stack direction="row" spacing={1}>
-              <Button variant="outlined" startIcon={<DownloadIcon />} size="small">
+            <Stack direction="row" spacing={1} style={{ display: "flex", alignItems: "center" }}>
+              <span style={{ fontSize: "10px", fontStyle: "italic", color: "gray" }}>{`( ${item.author!.split(" ").pop()} )`}</span>
+
+              {(authorLogin.level === "admin" || authorLogin.app.documentProgram.level === "admin") && (
+                <Button
+                  variant="outlined"
+                  startIcon={<HowToRegIcon />}
+                  size="small"
+                  color="secondary"
+                  onClick={() => {
+                    const itemRef: any = item.ref;
+                    const itemList = rightSideContentData[key];
+                    handleApprove(keyChild, key, itemRef, itemList, mainPageContext, authorLogin);
+                  }}
+                >
+                  Approve
+                </Button>
+              )}
+              <Button variant="outlined" startIcon={<DownloadIcon />} size="small" onClick={() => downloadFileFromStorage(item)}>
                 Download
               </Button>
-              <Button variant="outlined" startIcon={<UpgradeIcon />} size="small" color="warning">
-                Update
+              <Button variant="outlined" startIcon={<EditIcon />} size="small" color="info" disabled style={{ minWidth: "95px" }}>
+                Edit
               </Button>
-              <Button variant="outlined" startIcon={<DeleteIcon />} size="small" color="error">
+              <Button
+                variant="outlined"
+                startIcon={<DeleteIcon />}
+                size="small"
+                color="error"
+                disabled={item.authorId !== authorLogin.userName}
+                onClick={() => {
+                  const itemRef = `${item.ref}/${key}/${keyChild}`;
+                  handleDeleteNewDrawing(itemRef, item);
+                }}
+              >
                 delete
               </Button>
             </Stack>
@@ -195,23 +240,31 @@ function NewDrawing({
 }
 //JSX_END: New Drawing
 
-//JSX: New Drawing
+//JSX: Current Drawing
 
-function CurrentDrawing({
-  motherCrr,
-  rightSideContentData,
-  handelDirectViewPort2,
-}: {
-  motherCrr: ITF_ObjFilterArray;
-  rightSideContentData: ITF_drawingContent;
-  handelDirectViewPort2: Function;
-}) {
+function CurrentDrawing({ motherCrr, rightSideContentData, handelDirectViewPort2 }: { motherCrr: ITF_ObjFilterArray; rightSideContentData: ITF_drawingContent; handelDirectViewPort2: Function }) {
+  // console.log("🚀 ~ file: ViewPort1.tsx:236 ~ CurrentDrawing ~ rightSideContentData:", rightSideContentData)
+  //TODO: handle direct to create page
+  const handleDirectToCreatePage = (item: ITF_drawingContentItem) => {
+    const key = item.idCode as keyof ITF_drawingContent;
+    const objectTemp: any = rightSideContentData[key];
+    for (const key in objectTemp) {
+      if (objectTemp[key].status === "Waiting for approve") {
+        return alert(`Phiên bản v${objectTemp[key].version}  của  ${objectTemp[key].idCode}  đang chờ được phê duyệt !!!`);
+      }
+    }
+    window.history.pushState({ stateProp: item }, "", "/create");
+    window.location.href = "/create";
+  };
+  //TODO_END: handle direct to create page
+  const { authorLogin } = useContext<any>(AuthContext);
   return (
     <ul>
       <span className={style.titleList}>Current:</span>
-      {motherCrr.Current.map((groupCrr: string, groupIndex: number) => {
-        const keyTemp = groupCrr as keyof ITF_drawingContent;
-        const item: ITF_drawingContentItem = rightSideContentData[keyTemp];
+      {motherCrr.Current.map((groupCrr: { key: string; keyChild: string }, groupIndex: number) => {
+        const key = groupCrr.key as keyof ITF_drawingContent;
+        const keyChild = groupCrr.keyChild as keyof ITF_drawingContent;
+        const item: ITF_drawingContentItem = rightSideContentData[key][keyChild];
         return (
           <li className={style.listItem} key={groupIndex}>
             <div className={style.leftItem}>
@@ -221,11 +274,20 @@ function CurrentDrawing({
                 {item.name}
               </a>
             </div>
-            <Stack direction="row" spacing={1}>
-              <Button variant="outlined" startIcon={<DownloadIcon />} size="small">
+            <Stack direction="row" spacing={1} style={{ display: "flex", alignItems: "center" }}>
+              <span style={{ fontSize: "10px", fontStyle: "italic", color: "gray" }}>{`( ${item.author!.split(" ").pop()} )`}</span>
+              <Button variant="outlined" startIcon={<DownloadIcon />} size="small" onClick={() => downloadFileFromStorage(item)}>
                 Download
               </Button>
-              <Button variant="outlined" startIcon={<UpgradeIcon />} size="small" color="warning">
+              <Button
+                variant="outlined"
+                startIcon={<UpgradeIcon />}
+                size="small"
+                color="warning"
+                disabled={item.authorId !== authorLogin.userName}
+                onClick={() => handleDirectToCreatePage(item)}
+                style={{ minWidth: "95px" }}
+              >
                 Update
               </Button>
               <Button variant="outlined" startIcon={<DeleteIcon />} size="small" color="error" disabled>
@@ -238,4 +300,4 @@ function CurrentDrawing({
     </ul>
   );
 }
-//JSX_END: New Drawing
+//JSX_END: Current Drawing

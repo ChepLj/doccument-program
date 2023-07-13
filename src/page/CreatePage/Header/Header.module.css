@@ -45,4 +45,5 @@
     height: calc(var(--headerHeight) * 0.7) !important;
     width: calc(var(--headerHeight) * 0.7) !important;
     margin:5px 15px ;
+    border: 2px solid green;
 }

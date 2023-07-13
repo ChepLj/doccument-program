@@ -13,7 +13,7 @@ export const handelOpenImageFile = async (callback: Function) => {
       extensions: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
       // multiple: true,
     });
-    console.log("🚀 ~ file: CreatePage.tsx:57 ~ handelOpenFile ~ blob:", blob);
+    // console.log("🚀 ~ file: CreatePage.tsx:57 ~ handelOpenFile ~ blob:", blob);
     if (blob) {
       callback(blob);
     }
