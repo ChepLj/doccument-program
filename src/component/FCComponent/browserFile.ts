@@ -38,14 +38,20 @@ export const handelOpenTextFile = async (callback: Function) => {
         "image/vnd.dwg",
         "image/vnd.dxf",
         "model/vnd.dwf",
+        "application/x-rar-compressed",
+        "application/zip"
       ],
-      extensions: [".docx", ".doc", ".xls", ".xlsx", ".pdf", ".txt", ".elk", ".dwg", ".dwf", ".dxf"],
+      extensions: [".docx", ".doc", ".xls", ".xlsx", ".pdf", ".txt", ".elk", ".dwg", ".dwf", ".dxf", ".rar", ".zip"],
       // multiple: true,
     });
     if (blob) {
-    console.log("🚀 ~ file: CreatePage.tsx:57 ~ handelOpenFile ~ blob:", blob);
-
-      callback(blob);
+      if(blob.size > 100000000){
+        alert("The maximum of file size is 100Mb !")
+      }
+      else{
+        callback(blob);
+      }
+    // console.log("🚀 ~ file: CreatePage.tsx:57 ~ handelOpenFile ~ blob:", blob);    
     }
   } catch {}
 };
