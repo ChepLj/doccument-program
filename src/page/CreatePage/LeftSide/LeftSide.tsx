@@ -52,7 +52,7 @@ export default function LeftSide({ prop }: { prop: any }) {
         </ListSubheader>
       );
       motherCrr?.Current.forEach((element: any, index: number) => {
-        console.log("🚀 ~ file: LeftSide.tsx:54 ~ motherCrr?.Current.forEach ~ element:", element)
+        // console.log("🚀 ~ file: LeftSide.tsx:54 ~ motherCrr?.Current.forEach ~ element:", element)
         let disableWaiting4Approve = false;
         let disableDifferentAuthor = false;
         if(element?.authorId !== authorLogin.userName){ //: kiem tra dung ban ve cua user
@@ -260,7 +260,8 @@ export default function LeftSide({ prop }: { prop: any }) {
                   fullWidth
                   sx={{ pl: 1, pr: 1 }}
                   value={prop?.[`newChangeInputLine${crr}`]}
-                  onChange={(e) => prop?.[`setNewChangeInputLine${crr}`](e.target.value)}
+                  onChange={(e) => {prop?.[`setNewChangeInputLine${crr}`](e.target.value)}}
+                  
                 />
                 <Button
                   variant="outlined"

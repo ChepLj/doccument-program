@@ -32,14 +32,12 @@ const LoginPage = () => {
                 handleToast({ isOpen: true, messenger: "Tài khoản này đã bị khóa! Liên hệ Mr.Sỹ để biết thêm chi tiết !" });
               } else {
                 const authLoginTemp = payload?.[key];
-                if(checkPermission(authLoginTemp.app)){                 
-                  sessionStorage.setItem('authorLogin', encryptCrypto(authLoginTemp))
+                if (checkPermission(authLoginTemp.app)) {
+                  sessionStorage.setItem("authorLogin", encryptCrypto(authLoginTemp));
                   setAuthorLogin(authLoginTemp);
-                }
-                else{
+                } else {
                   handleToast({ isOpen: true, messenger: "Tài khoản này chưa được cấp phép hoặc bị chặn truy cập ứng dụng này ! Liên hệ Mr.Sỹ để biết thêm chi tiết !" });
                 }
-
               }
             } else {
               handleToast({ isOpen: true, messenger: "Sai mật khẩu" });
@@ -60,6 +58,18 @@ const LoginPage = () => {
       getAuthorFromAccountDB(childRef, handelManualLoginFirebaseUser);
     }
   };
+
+  //TODO: show password
+  const showPassword = ()=>{
+    const inputPassElm = document.querySelector("input[name='login-password']") as HTMLInputElement
+    if (inputPassElm!.type === "password") {
+      inputPassElm!.type = "text";
+    } else {
+      inputPassElm!.type = "password";
+    }
+  }
+
+  //TODO_END: show password
   ////////////////
 
   return (
@@ -80,6 +90,7 @@ const LoginPage = () => {
               className={style.itemInput}
               placeholder="Enter password"
               name="login-password"
+              type="password"
               onKeyUp={(e) => {
                 if (e.code === "Enter") {
                   handelManualLogin();
@@ -87,6 +98,7 @@ const LoginPage = () => {
               }}
             ></input>
           </div>
+          <div className={style.showPassWord} onClick={showPassword}>Show password</div>
         </div>
         <button className={style.button} onClick={handelManualLogin}>
           Login

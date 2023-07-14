@@ -1,19 +1,17 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import getDataFromDB from "../../api/getDataFromDB";
 import { Header } from "./Header/Header";
 import { LeftSide } from "./LeftSide/LeftSide";
 import style from "./MainPage.module.css";
 import { RightSide } from "./RightSide/RightSide";
-import { AuthContext } from "../LoginPage/function/loginContext";
 import { ModalImageShow } from "./RightSide/ViewPort2/ModalImageShow";
 
-///////
+///////O
 export const MainPageContext = createContext({});
 export function MainPage() {
 
   const [rightSideContentData, setRightSideContentData] = useState();
   const [refreshState, setRefreshState] = useState<number>(0)
-  const { authorLogin } = useContext<any>(AuthContext);
   // console.log("🚀 ~ file: MainPage.tsx:16 ~ MainPage ~ authorLogin:", authorLogin)
   const [modalImageOpen,setModalImageOpen] = useState<{isOpen:boolean, data?: string[]}>({isOpen:false})
 

@@ -5,7 +5,7 @@ import { Button } from "@mui/material";
 import { handelOpenTextFile } from "../../../component/FCComponent/browserFile";
 import { getKeyByValue } from "../../../component/FCComponent/getKeyByValue";
 import style from './RightSide.module.css'
-import MIMEtype from "../../../component/MIMEtype.json";
+import {MIMEtype} from "../../../component/MIMEtype";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 import noImageAvailable from "../../../media/image/No_Image_Available.jpg";
@@ -63,6 +63,7 @@ export default function RightSide({ prop }: { prop: any }) {
                   <div className={style.rightSideImageItem} key={`${crr}-${indexItem}`}>
                     <img
                       className={style.rightSideImageItemImage}
+                      alt=''
                       src={
                         prop?.[`imageArray${crr}`]?.[indexItem]
                           ? URL.createObjectURL(prop[`imageArray${crr}`][indexItem])

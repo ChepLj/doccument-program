@@ -20,6 +20,7 @@ export interface ITF_drawingContentItem {
   path?:string;
   ref?:string;
   detail?: {
+    imageRef: string,
     line1:{
       text: string;
       attachment: any;
@@ -38,7 +39,10 @@ export interface ITF_drawingContentItem {
     }
     
   };
-  urlFileStore?: string;
+  urlFileStore?: {
+    fileRef:string,
+    fileURL: string,
+  };
   available?: string;
   groupStyle?: ITF_Area;
   areaField?: ITF_Area;

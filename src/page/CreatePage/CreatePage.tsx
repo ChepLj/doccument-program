@@ -3,13 +3,13 @@ import { handleData4CreateIdCodeList } from "../../component/FCComponent/handleD
 
 import getDataFromDB from "../../api/getDataFromDB";
 import { upLoadDataCreatePage } from "../../component/FCComponent/handelUploadDataCreatePage";
-import { ITF_Area, ITF_drawing, ITF_drawingContent, ITF_drawingContentItem } from "../../interface/interface";
+import { ITF_Area, ITF_drawing, ITF_drawingContentItem } from "../../interface/interface";
+import { AuthContext } from "../LoginPage/function/loginContext";
 import style from "./CreatePage.module.css";
 import { Header } from "./Header/Header";
 import LeftSide from "./LeftSide/LeftSide";
 import ProgressUpload from "./ProgressUpload/ProgressUpload";
 import RightSide from "./RightSide/RightSide";
-import { AuthContext } from "../LoginPage/function/loginContext";
 
 export function CreatePage() {
   //TODO: mount
@@ -104,6 +104,8 @@ export function CreatePage() {
   //: area
   useEffect(() => {
     if (locationState?.areaField?.id && areaFieldList !== undefined) {
+
+      
       for (const item of areaFieldList) {
         if (item.id === locationState.areaField?.id) {
           setSelectAreaValue(JSON.stringify(item));
@@ -123,8 +125,10 @@ export function CreatePage() {
   }, [localFieldList]);
   //: idCode
   useEffect(() => {
-    if (locationState && idCodeFieldList.length > 1) {
+    // if (locationState && idCodeFieldList.length > 1) {
+      if (locationState) {
       if (locationState.idCode === "Create New") {
+        console.log('check')
         setSelectIdCodeValue("Create New");
         setSelectGroupValue(JSON.stringify(locationState?.groupField));
       } else {
@@ -241,7 +245,7 @@ export function CreatePage() {
   useEffect(() => {
     if (selectLocalValue) {
       const typeName = JSON.parse(selectTypeValue).name;
-      const areaId = JSON.parse(selectAreaValue).id;
+      const areaId = !selectAreaValue || JSON.parse(selectAreaValue).id;
       const localId = JSON.parse(selectLocalValue).id;
       const refChild = `${typeName}/${areaId}/${localId}`;
       const callback = (result: any) => {
@@ -253,7 +257,7 @@ export function CreatePage() {
       };
       getDataFromDB(refChild, callback);
       setSelectIdCodeValue("");
-      setNameInputValue("");
+      setNameInputValue("")
     }
   }, [selectLocalValue]);
   //: Name Input & group
@@ -352,7 +356,6 @@ export function CreatePage() {
               image: [imageArray1, imageArray2, imageArray3, imageArray4],
             }}
           />
-          // <h3>dsfsdff</h3>
         )}
       </section>
     </section>

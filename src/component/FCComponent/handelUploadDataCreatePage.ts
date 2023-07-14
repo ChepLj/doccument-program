@@ -1,13 +1,12 @@
 import { get, ref } from "firebase/database";
-import getDataFromDB from "../../api/getDataFromDB";
+import { database } from "../../api/firebase/firebaseConfig";
 import { ITF_drawingContentItem } from "../../interface/interface";
-import MIMEtype from "../MIMEtype.json";
+import { MIMEtype } from "../MIMEtype";
 import { getKeyByValue } from "./getKeyByValue";
 import handleNowTime from "./handleTime";
-import { database } from "../../api/firebase/firebaseConfig";
 
 export async function upLoadDataCreatePage(prop: any) {
-  console.log("🚀 ~ file: handelUploadDataCreatePage.ts:10 ~ upLoadDataCreatePage ~ prop:", prop)
+  // console.log("🚀 ~ file: handelUploadDataCreatePage.ts:10 ~ upLoadDataCreatePage ~ prop:", prop)
   //TODO: validate data
   const validateData = () => {
     const condition1 =
@@ -60,20 +59,22 @@ export async function upLoadDataCreatePage(prop: any) {
   //: handle detail
   const handleDetail = () => {
     return {
+      imageRef: '',
       line1: {
-        text: prop.newChangeInputLine1,
+        // text: prop.newChangeInputLine1,
+        text : prop.newChangeInputLine1.replaceAll("\n", "<br/>"),
         attachment: [],
       },
       line2: {
-        text: prop.newChangeInputLine2,
+        text: prop.newChangeInputLine2.replaceAll("\n", "<br/>"),
         attachment: [],
       },
       line3: {
-        text: prop.newChangeInputLine3,
+        text: prop.newChangeInputLine3.replaceAll("\n", "<br/>"),
         attachment: [],
       },
       line4: {
-        text: prop.newChangeInputLine4,
+        text: prop.newChangeInputLine4.replaceAll("\n", "<br/>"),
         attachment: [],
       },
     };
@@ -127,11 +128,14 @@ export async function upLoadDataCreatePage(prop: any) {
       },
       commit: prop.commitInput,
       detail: handleDetail(),
-      urlFileStore: "",
+      urlFileStore: {
+        fileURL:'',
+        fileRef:''
+      },
       accessRights: [],
       available: "normal",
     };
-    // console.log("🚀 ~ file: CreatePage.tsx:107 ~ handlePrepareDataUpload ~ objectData:", objectData);
+    console.log("🚀 ~ file: CreatePage.tsx:107 ~ handlePrepareDataUpload ~ objectData:", objectData);
 
     prop?.setUploadState({
       isUpload: true,

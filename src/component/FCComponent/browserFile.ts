@@ -1,4 +1,4 @@
-import { fileOpen, directoryOpen, fileSave, supported } from "browser-fs-access";
+import { fileOpen, supported } from "browser-fs-access";
 if (supported) {
   console.log("Using the File System Access API.");
 } else {
@@ -39,19 +39,18 @@ export const handelOpenTextFile = async (callback: Function) => {
         "image/vnd.dxf",
         "model/vnd.dwf",
         "application/x-rar-compressed",
-        "application/zip"
+        "application/zip",
       ],
       extensions: [".docx", ".doc", ".xls", ".xlsx", ".pdf", ".txt", ".elk", ".dwg", ".dwf", ".dxf", ".rar", ".zip"],
       // multiple: true,
     });
     if (blob) {
-      if(blob.size > 100000000){
-        alert("The maximum of file size is 100Mb !")
-      }
-      else{
+      if (blob.size > 80000000) {
+        alert("The maximum of file size is 80Mb !");
+      } else {
         callback(blob);
       }
-    // console.log("🚀 ~ file: CreatePage.tsx:57 ~ handelOpenFile ~ blob:", blob);    
+      console.log("🚀 ~ file: CreatePage.tsx:57 ~ handelOpenFile ~ blob:", blob);
     }
   } catch {}
 };

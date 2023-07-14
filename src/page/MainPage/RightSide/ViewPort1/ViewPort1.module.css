@@ -1,9 +1,10 @@
 
 .mainContainer{
     width:99%;
-    height:95%;
+    height:99%;
     text-align: start;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     /* background-color: rgb(20, 20, 20, 0.7); */
 
 }
@@ -54,7 +55,7 @@
 }
 .leftItem{
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
 }
 .rightItem{

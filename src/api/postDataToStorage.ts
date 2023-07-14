@@ -1,10 +1,10 @@
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "./firebase/firebaseConfig";
 
-function postDataToStorage (image: any, childRef: string,fileName: string, callback :Function , progressCallback?: Function) {
+function postDataToStorage (image: any, childRef: string,fileName: string, callback :Function , progressCallback?: Function, metaData?:any) {
 // Upload file and metadata to the object 'images/mountains.jpg'
 const storageRef = ref(storage, childRef + fileName);
-const uploadTask = uploadBytesResumable(storageRef, image);
+const uploadTask = uploadBytesResumable(storageRef, image, metaData);
 // Listen for state changes, errors, and completion of the upload.
 uploadTask.on('state_changed',
   (snapshot) => {

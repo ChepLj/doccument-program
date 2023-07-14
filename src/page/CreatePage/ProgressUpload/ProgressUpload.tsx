@@ -4,6 +4,7 @@ import postDataToDB from "../../../api/postDataToDB";
 import postDataToStorage from "../../../api/postDataToStorage";
 import { ITF_UploadContainer } from "../../../interface/interface";
 import style from "./ProgressUpload.module.css";
+import { ITF_Mime, MIMEtype } from "../../../component/MIMEtype";
 
 
 export default function ProgressUpload({ prop }: { prop: any }) {
@@ -40,17 +41,30 @@ export default function ProgressUpload({ prop }: { prop: any }) {
     switch (state) {
       case "file Upload": {
         const file = prop?.file;
-        const fileName = data?.name;
+        const temp = file.name.split('.')
+        const tag = temp[temp.length -1]
+        const fileName = data?.name +'.'+tag;
         const ref = `${data.groupStyle.name}/FILE/${data.idCode}/v${data.version}/`;
         const callback = (messenger: string, result: any) => {
           if (messenger === "Upload completed successfully") {
-            data.urlFileStore = result;
+            data.urlFileStore = {fileRef: ref, fileURL: result};
             setState("image Upload");
           } else if (messenger === "Upload Failed") {
             setState("error");
           }
         };
-        postDataToStorage(file, ref, fileName, callback, setFileProgressState);
+        if (file.type === "") {
+          const temp: string[] = file.name.split(".");
+          const tagTemp = temp[temp.length - 1] as keyof ITF_Mime;
+          const newMetadata = {
+            contentType: MIMEtype[tagTemp]
+          };
+          postDataToStorage(file, ref, fileName, callback, setFileProgressState,newMetadata);
+
+        }
+        else{
+          postDataToStorage(file, ref, fileName, callback, setFileProgressState);
+        }
         break;
       }
       case "image Upload": {
@@ -62,6 +76,7 @@ export default function ProgressUpload({ prop }: { prop: any }) {
             const file = crr.image;
             const fileName = `Line ${crr.line} - Index ${index}`;
             const ref = `${data.groupStyle.name}/IMAGE/${data.idCode}/v${data.version}/`;
+            data.detail.imageRef = ref
             const callback = (messenger: string, result: any) => {
               if (messenger === "Upload completed successfully") {
                 data.detail[`line${crr.line}`].attachment.push(result);

@@ -1,5 +1,3 @@
-
-
 .mainContainer {
   background-color: white;
   width: 100%;
@@ -22,11 +20,11 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
 }
-.icon{
+.icon {
   width: 100px;
   height: 100px;
   margin: 30px;
@@ -37,7 +35,7 @@
   max-width: 400px;
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   border: 1px solid gray;
   padding: 20px 30px;
@@ -74,7 +72,7 @@
 .button {
   width: 90%;
   max-width: 400px;
-  background-color: #3880FF;
+  background-color: #3880ff;
   padding: 10px;
   border-radius: 10px;
   border: none;
@@ -84,11 +82,11 @@
   cursor: pointer;
 }
 
-.button:active{
+.button:active {
   opacity: 0.5;
 }
 
-.toast{
+.toast {
   min-width: 300px;
   max-width: 800px;
   padding: 6px;
@@ -98,4 +96,16 @@
   top: 60px;
   left: 10px;
   border-radius: 5px;
+}
+
+.showPassWord {
+  /* width: 100%; */
+  text-align: end;
+  font-size: 12px;
+  font-style: italic;
+  color: gray;
+  padding-top: 5px;
+  cursor:pointer;
+  user-select: none;
+  margin-left: auto;
 }

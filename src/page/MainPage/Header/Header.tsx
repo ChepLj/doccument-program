@@ -1,4 +1,4 @@
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import AddIcon from "@mui/icons-material/AddToDrive";
 import { Avatar, Button, Tab, Tabs } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import logo from "../../../media/image/doccument-Icon.png";
@@ -35,8 +35,8 @@ export function Header({ setRefreshState, locationState }: { setRefreshState: Fu
         </Tabs>
       </div>
       <div className={style.rightArea}>
-        <Button variant="contained" size="small" color="success" startIcon={<CloudUploadIcon />} onClick={() => window.location.assign("/create")}>
-          Upload
+        <Button variant="contained" size="small" color="success" startIcon={<AddIcon />} onClick={() => window.location.assign("/create")}>
+          Add New 
         </Button>
         <Avatar className={style.avatar} src={authorLogin.photoURL}></Avatar>
       </div>

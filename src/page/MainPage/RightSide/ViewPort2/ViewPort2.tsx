@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import downloadFileFromStorage from "../../../../api/downloadFileFromStorage";
 import { ITF_drawingContent, ITF_drawingContentItem } from "../../../../interface/interface";
 import style from "./ViewPort2.module.css";
-import { fileOpen } from 'browser-fs-access';
-import { ModalImageShow } from "./ModalImageShow";
 
 export default function ViewPort2({
   idCodeWithVersion,
@@ -130,7 +128,7 @@ function LeftSide({ objMain, setModalImageOpen }: { objMain: ITF_drawingContentI
           return (
             <li className={style.listDetail} key={index}>
               <div className={style.itemDetail}>
-                <span className={style.itemDetailText}>{newItem?.text}</span>
+                <span className={style.itemDetailText} dangerouslySetInnerHTML={{__html:newItem?.text}}></span>
                 <CollectionsRoundedIcon className={style.itemDetailImage} color={newItem.attachment ? "secondary": "disabled"}  onClick={()=>newItem.attachment && setModalImageOpen({isOpen:true, data:newItem.attachment})}/>
               </div>
             </li>

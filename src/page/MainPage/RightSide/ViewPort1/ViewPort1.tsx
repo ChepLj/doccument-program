@@ -1,7 +1,7 @@
+import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from "@mui/icons-material/Add";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
@@ -10,11 +10,10 @@ import { useContext, useEffect } from "react";
 import downloadFileFromStorage from "../../../../api/downloadFileFromStorage.ts";
 import handleDeleteData from "../../../../component/FCComponent/handelDeleteData.ts";
 import handleApprove from "../../../../component/FCComponent/handleApprove.ts";
-import { ITF_ObjFilter, ITF_ObjFilterArray, ITF_drawing, ITF_drawingContent, ITF_drawingContentItem } from "../../../../interface/interface.ts";
+import { ITF_ObjFilter, ITF_ObjFilterArray, ITF_drawingContent, ITF_drawingContentItem } from "../../../../interface/interface.ts";
+import { AuthContext } from "../../../LoginPage/function/loginContext.tsx";
 import { MainPageContext } from "./../../MainPage";
 import style from "./ViewPort1.module.css";
-import { ITF_AuthorLogin } from "./../../../../interface/interface";
-import { AuthContext } from "../../../LoginPage/function/loginContext.tsx";
 
 export default function ViewPort1({ rightSideContentData, handelDirectViewPort2 }: { rightSideContentData: ITF_drawingContent; handelDirectViewPort2: Function }) {
   // console.log("🚀 ~ file: ViewPort1.tsx:22 ~ rightSideContentData:", rightSideContentData);
@@ -172,7 +171,7 @@ function NewDrawing({ motherCrr, rightSideContentData, handelDirectViewPort2 }: 
   const handleDeleteNewDrawing = (ref: string, item: any) => {
     const promptInput = prompt(`Nhập  ${item.idCode}   để xóa !`);
     if (promptInput) {
-      handleDeleteData(ref, mainPageContext);
+      handleDeleteData(ref,item, mainPageContext);
     } else {
       alert(`Sai mã bản vẽ. nhập lại !`);
     }
