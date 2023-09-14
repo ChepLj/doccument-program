@@ -1,7 +1,9 @@
 
 import postDataToDB from "../../api/postDataToDB";
+import { ITF_drawingContentItem } from "../../interface/interface";
+import handleNowTime from "./handleTime";
 
-export default function handleApprove(childKey: string, key: string, itemRef: string, itemList: any, mainPageContext: any, authorLogin:any) {
+export default function handleApprove(childKey: string, key: string, itemRef: string, itemList: any, mainPageContext: any, authorLogin:any , logsKey: string | number , item:ITF_drawingContentItem) {
   let currentKey = "";
   for (const key in itemList) {
     if (itemList[key].status === "Current") {
@@ -10,7 +12,9 @@ export default function handleApprove(childKey: string, key: string, itemRef: st
   }
 
   let containerUpload: any = [];
+  const currentTimeInMilliseconds = Date.now().toString();
   if (currentKey !== "") {
+
     containerUpload = [
       {
         ref: `${itemRef}/${key}/${childKey}/status`,
@@ -24,12 +28,62 @@ export default function handleApprove(childKey: string, key: string, itemRef: st
         ref: `${itemRef}/${key}/${currentKey}/status`,
         data: "Old Release",
       },
+      {
+        ref: `LOGS/WaitingForApprove/${logsKey}`,
+        data: null,
+      },
+      {
+        ref: `LOGS/DataLogs/${currentTimeInMilliseconds}`,
+        data: {
+          logsKey: currentTimeInMilliseconds,
+          author: item.author,
+          actionAuthor: authorLogin.displayName,
+          authorId: item.authorId,
+          available: item.available,
+          commit: item.commit,
+          dateUpdate: item.dateUpdate,
+          idCode: item.idCode,
+          name: item.name,
+          status: 'Current',
+          type: item.type,
+          version: item.version, 
+          ref: item.ref,
+          size: item.size,
+          path: item.path,
+          action: 'Approved',
+        },
+      },
     ];
   } else {
     containerUpload = [
       {
         ref: `${itemRef}/${key}/${childKey}/status`,
         data: "Current",
+      },
+      {
+        ref: `LOGS/WaitingForApprove/${logsKey}`,
+        data: null,
+      },
+      {
+        ref: `LOGS/DataLogs/${currentTimeInMilliseconds}`,
+        data: {
+          logsKey: currentTimeInMilliseconds,
+          author: item.author,
+          actionAuthor: authorLogin.displayName,
+          authorId: item.authorId,
+          available: item.available,
+          commit: item.commit,
+          dateUpdate: item.dateUpdate,
+          idCode: item.idCode,
+          name: item.name,
+          status: 'Current',
+          type: item.type,
+          version: item.version, 
+          ref: item.ref,
+          size: item.size,
+          path: item.path,
+          action: 'Approved',
+        },
       },
     ];
   }

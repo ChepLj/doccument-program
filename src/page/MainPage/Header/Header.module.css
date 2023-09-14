@@ -47,3 +47,51 @@
     margin:5px 15px ;
     border: 2px solid green;
 }
+
+.logs{
+    padding:5px 15px !important;
+    /* margin: 15px !important; */
+    margin-left : 15px !important;
+}
+
+.logsItem{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+.logsIdCode{
+    padding: 0 10px 0 0;
+    color:green
+}
+
+.logsName{
+    color:blueviolet;
+    padding: 0 10px 0 0;
+    cursor: pointer;
+    overflow:hidden;
+    display:inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 600px;
+}
+.logsLogsIdCode{
+    padding: 0 10px 0 0;
+    /* color:green */
+}
+
+.logsLogsName{
+    /* color:blueviolet; */
+    padding: 0 10px 0 0;
+    cursor: text;
+    overflow:hidden;
+    display:inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 600px;
+
+}
+.logsLogsAction{
+    padding: 0 10px 0 0;
+    min-width: 90px;
+}

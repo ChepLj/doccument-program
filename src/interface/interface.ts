@@ -8,6 +8,7 @@ export interface ITF_drawingContent {}
 
 export interface ITF_drawingContentItem {
   idCode: string;
+  logsKey?: string | number;
   name: string;
   type?: string;
   author?: string;
@@ -19,6 +20,8 @@ export interface ITF_drawingContentItem {
   commit?: string;
   path?:string;
   ref?:string;
+  lock?:string;
+  lockMessenger?:string;
   detail?: {
     imageRef: string,
     line1:{

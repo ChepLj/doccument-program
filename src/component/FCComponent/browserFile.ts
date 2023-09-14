@@ -45,8 +45,8 @@ export const handelOpenTextFile = async (callback: Function) => {
       // multiple: true,
     });
     if (blob) {
-      if (blob.size > 80000000) {
-        alert("The maximum of file size is 80Mb !");
+      if (blob.size > 1000000000) {
+        alert("The File is over size > 1Gb !");
       } else {
         callback(blob);
       }

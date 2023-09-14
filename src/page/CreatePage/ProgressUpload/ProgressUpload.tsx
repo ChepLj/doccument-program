@@ -108,10 +108,36 @@ export default function ProgressUpload({ prop }: { prop: any }) {
         const areaId = data.areaField.id || "errorRootKey";
         const localId = data.localField.id || "errorMotherKey";
         const itemKey = `${data.idCode}`;
-
+        const currentTimeInMilliseconds = Date.now().toString();
+        data.logsKey= currentTimeInMilliseconds;
         const uploadContainer: ITF_UploadContainer[] = [
           {
             ref: `${typeName}/${areaId}/${localId}/${itemKey}/${itemKey}-version-${data.version}`,
+            data: data,
+          },
+          {
+            ref: `LOGS/DataLogs/${currentTimeInMilliseconds}`,
+            data: {
+              logsKey: data.logsKey,
+              author: data.author,
+              actionAuthor: data.author,
+              authorId: data.authorId,
+              available: data.available,
+              commit: data.commit,
+              dateUpdate: data.dateUpdate,
+              idCode: data.idCode,
+              name: data.name,
+              status: data.status,
+              type: data.type,
+              version: data.version, 
+              ref: data.ref,
+              size: data.size,
+              path: data.path,
+              action: data.version == '01'? 'Create New' : 'Update',
+            },
+          },
+          {
+            ref: `LOGS/WaitingForApprove/${currentTimeInMilliseconds}`,
             data: data,
           },
         ];
@@ -126,6 +152,7 @@ export default function ProgressUpload({ prop }: { prop: any }) {
         break;
       }
       case "done": {
+       
         break;
       }
       case "error": {

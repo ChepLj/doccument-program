@@ -62,3 +62,13 @@
     width: auto;
 
 }
+
+.lockPopoverItem{
+    cursor: pointer;
+    /* color: red; */
+}
+
+.lockPopoverItem:hover{
+    /* font-size: larger; */
+    color: red;
+}

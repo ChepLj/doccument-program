@@ -219,3 +219,12 @@
   top: 50%;
   right: 50%;
 }
+.lockPopoverItem{
+  cursor: pointer;
+  /* color: red; */
+}
+
+.lockPopoverItem:hover{
+  /* font-size: larger; */
+  color: red;
+}

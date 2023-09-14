@@ -4,17 +4,13 @@ import { ITF_drawingContentItem } from "../../interface/interface";
 import { MIMEtype } from "../MIMEtype";
 import { getKeyByValue } from "./getKeyByValue";
 import handleNowTime from "./handleTime";
+import getDataFromDB from "../../api/getDataFromDB";
 
 export async function upLoadDataCreatePage(prop: any) {
   // console.log("🚀 ~ file: handelUploadDataCreatePage.ts:10 ~ upLoadDataCreatePage ~ prop:", prop)
   //TODO: validate data
   const validateData = () => {
-    const condition1 =
-      prop.selectTypeValue !== "" &&
-      prop.selectAreaValue !== "" &&
-      prop.selectLocalValue !== "" &&
-      prop.selectGroupValue !== "" &&
-      prop.selectIdCodeValue !== "";
+    const condition1 = prop.selectTypeValue !== "" && prop.selectAreaValue !== "" && prop.selectLocalValue !== "" && prop.selectGroupValue !== "" && prop.selectIdCodeValue !== "";
     const condition2 = prop.commitInput !== "";
     const condition3 = typeof prop.file !== "undefined";
     if (condition1 && condition2 && condition3) {
@@ -26,11 +22,11 @@ export async function upLoadDataCreatePage(prop: any) {
   //TODO: handle prepare data upload
 
   //: handle ID code
-  const handleIdCode = async (typeValue:any,areaValue: any, localValue: any) => {
+  const handleIdCode = async (typeValue: any, areaValue: any, localValue: any) => {
     if (prop.selectIdCodeValue === "Create New") {
       const areaId = areaValue.id;
       const localId = localValue.id;
-      const typeName = typeValue.name
+      const typeName = typeValue.name;
       const refChild = `${typeName}/${areaId}/${localId}`;
       const mainRef = ref(database, refChild);
       try {
@@ -59,10 +55,10 @@ export async function upLoadDataCreatePage(prop: any) {
   //: handle detail
   const handleDetail = () => {
     return {
-      imageRef: '',
+      imageRef: "",
       line1: {
         // text: prop.newChangeInputLine1,
-        text : prop.newChangeInputLine1.replaceAll("\n", "<br/>"),
+        text: prop.newChangeInputLine1.replaceAll("\n", "<br/>"),
         attachment: [],
       },
       line2: {
@@ -91,17 +87,28 @@ export async function upLoadDataCreatePage(prop: any) {
       return `0${newVersionTemp}`;
     }
   };
-  if (validateData()) {
-    const typeValue = JSON.parse(prop.selectTypeValue)
+  //TODO: handle Create Object Data Upload
+  const createObjectDataUpload = async () => {
+    const typeValue = JSON.parse(prop.selectTypeValue);
     const areaValue = JSON.parse(prop.selectAreaValue);
     const localValue = JSON.parse(prop.selectLocalValue);
     const groupValue = JSON.parse(prop.selectGroupValue);
+    const handleTypeFile = (): string => {
+      const tag = getKeyByValue(MIMEtype, prop.file.type);
+      if (tag) {
+        return tag;
+      } else {
+        const temp = prop.file.name.split(".");
+        const tag2 = temp[temp.length - 1];
+        return tag2;
+      }
+    };
 
     // const idCodeValue = JSON.parse(prop.selectIdCodeValue);
     const objectData: ITF_drawingContentItem = {
-      idCode: await handleIdCode(typeValue,areaValue, localValue),
+      idCode: await handleIdCode(typeValue, areaValue, localValue),
       name: prop.nameInputValue,
-      type: prop.file?.type ? getKeyByValue(MIMEtype, prop.file.type) : "...",
+      type: handleTypeFile(),
       author: prop.authorLogin.displayName,
       authorId: prop.authorLogin.userName,
       dateUpdate: handleNowTime("date only"),
@@ -129,8 +136,8 @@ export async function upLoadDataCreatePage(prop: any) {
       commit: prop.commitInput,
       detail: handleDetail(),
       urlFileStore: {
-        fileURL:'',
-        fileRef:''
+        fileURL: "",
+        fileRef: "",
       },
       accessRights: [],
       available: "normal",
@@ -141,6 +148,33 @@ export async function upLoadDataCreatePage(prop: any) {
       isUpload: true,
       data: objectData,
     });
+  };
+  //TODO_END: handle Create Object Data Upload
+
+  if (validateData()) {
+    const maxFileUploadSize = 80000000;
+    if (prop.file?.size > maxFileUploadSize) {
+      const promptInput = prompt(`Kích thước File tối đa là ${maxFileUploadSize} byte. \nNếu vẫn muốn upload File kích thước lớn hơn, nhập mã code Upload Large File bên dưới !`);
+      //TODO: Get Upload Large File Code
+      const ref = `CODE/`;
+      const callback = (result: any) => {
+        if (result.type === "SUCCESSFUL") {
+          const code = result.payload.LargeFileUploadCode;
+          if (code === promptInput) {
+            createObjectDataUpload();
+          } else {
+            alert("Sai mật mã. Nhập lại !");
+          }
+        } else {
+          alert("something is wrong! can not get data");
+        }
+      };
+      getDataFromDB(ref, callback);
+
+      //TODO_ENd: Get Upload Large File Cod
+    } else {
+      createObjectDataUpload();
+    }
   } else alert("Tất cả các trường có dấu * phải được điền !!!");
 
   //TODO_END: handle prepare data upload
